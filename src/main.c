@@ -10,6 +10,14 @@ typedef struct
 	unsigned int taskSource;
 } Data_t;
 
+typedef struct
+{
+	char *ledName;
+	unsigned int ledTask;
+	QueueHandle_t ledQueue;
+	unsigned int ledPin;
+} ledStruct;
+
 enum task{
 	TASK1 = 0,
 	TASK2,
@@ -20,9 +28,8 @@ char Error = 0;
 Data_t data;
 portBASE_TYPE xStatus;
 
-static void Task1Led(void *pvParameter);
-static void Task2Led(void *pvParameter);
-static void Task3Led(void *pvParameter);
+//static void TaskLed(ledStruct *pvParameter);
+static void TaskLed(void *pvParameter);
 void vButton1Task(void *pvParameter);
 void vButton2Task(void *pvParameter);
 void vButton3Task(void *pvParameter);
@@ -31,71 +38,61 @@ QueueHandle_t xLed1Queue;
 QueueHandle_t xLed2Queue;
 QueueHandle_t xLed3Queue;
 
+ledStruct Led1;
+ledStruct Led2;
+ledStruct Led3;
+
 int main(void)
 {
 	LedInit();
 	ButtonInit();
 	UartInit();
+	
 	xLed1Queue = xQueueCreate(1, sizeof(Data_t));
 	xLed2Queue = xQueueCreate(1, sizeof(Data_t));
 	xLed3Queue = xQueueCreate(1, sizeof(Data_t));
 	
-	xTaskCreate(Task1Led,(const char *) "Task LED 1", configMINIMAL_STACK_SIZE, NULL, 2, (xTaskHandle *) NULL);
-	xTaskCreate(Task2Led,(const char *) "Task LED 2", configMINIMAL_STACK_SIZE, NULL, 2, (xTaskHandle *) NULL);
-	xTaskCreate(Task3Led,(const char *) "Task LED 3", configMINIMAL_STACK_SIZE, NULL, 2, (xTaskHandle *) NULL);
-	xTaskCreate(vButton1Task,(const char *) "Button 1", configMINIMAL_STACK_SIZE, NULL, 1, (xTaskHandle *) NULL);
-	xTaskCreate(vButton2Task,(const char *) "Button 2", configMINIMAL_STACK_SIZE, NULL, 1, (xTaskHandle *) NULL);
-	xTaskCreate(vButton3Task,(const char *) "Button 3", configMINIMAL_STACK_SIZE, NULL, 1, (xTaskHandle *) NULL);
+	Led1.ledPin = GPIO_Pin_13;
+	Led1.ledQueue = xLed1Queue;
+	Led1.ledTask = TASK1;
+	Led1.ledName = "led1";
+	
+	Led2.ledPin = GPIO_Pin_14;
+	Led2.ledQueue = xLed2Queue;
+	Led2.ledTask = TASK2;
+	Led2.ledName = "led2";
+	
+	Led3.ledPin = GPIO_Pin_15;
+	Led3.ledQueue = xLed3Queue;
+	Led3.ledTask = TASK3;
+	Led3.ledName = "led3";
+	
+//	xTaskCreate(TaskLed,(const char *) "Task LED 1", configMINIMAL_STACK_SIZE, NULL, 2, (xTaskHandle *) NULL);
+	xTaskCreate(TaskLed,(const char *) "Task LED 1", configMINIMAL_STACK_SIZE, (void *) &Led1, 2, (xTaskHandle *) NULL);
+	xTaskCreate(TaskLed,(const char *) "Task LED 2", configMINIMAL_STACK_SIZE, (void *) &Led2, 2, (xTaskHandle *) NULL);
+	xTaskCreate(TaskLed,(const char *) "Task LED 3", configMINIMAL_STACK_SIZE, (void *) &Led3, 2, (xTaskHandle *) NULL);
+
+	xTaskCreate(vButton1Task,(const char *) "Button 1", 200, NULL, 1, (xTaskHandle *) NULL);
+	xTaskCreate(vButton2Task,(const char *) "Button 2", 200, NULL, 1, (xTaskHandle *) NULL);
+	xTaskCreate(vButton3Task,(const char *) "Button 3", 200, NULL, 1, (xTaskHandle *) NULL);
 	vTaskStartScheduler();
 	for(;;);
 }
 
-static void Task1Led(void *pvParameter)
+static void TaskLed(void *Led)
 {
+	ledStruct *Led1;
+	Led1 = (ledStruct *) Led;
 	for(;;)
 	{		
-		xStatus = xQueueReceive(xLed1Queue, &data, 100);
+		xStatus = xQueueReceive(Led1->ledQueue , &data, 100);
 
 		if(xStatus == pdPASS)
 		{
-			if(data.taskSource == TASK1)
+			if(data.taskSource == Led1->ledTask)
 			{
-				GPIO_WriteBit(GPIOC, GPIO_Pin_13, data.buttonValue);
-				UartSend("led1");
-			}
-		}
-	}
-}
-
-static void Task2Led(void *pvParameter)
-{
-	for(;;)
-	{		
-		xStatus = xQueueReceive(xLed2Queue, &data, 100);
-
-		if(xStatus == pdPASS)
-		{
-			if(data.taskSource == TASK2)
-			{
-				GPIO_WriteBit(GPIOC, GPIO_Pin_14, data.buttonValue);
-				UartSend("led2");
-			}
-		}
-	}
-}
-
-static void Task3Led(void *pvParameter)
-{
-	for(;;)
-	{		
-		xStatus = xQueueReceive(xLed3Queue, &data, 100);
-
-		if(xStatus == pdPASS)
-		{
-			if(data.taskSource == TASK3)
-			{
-				GPIO_WriteBit(GPIOC, GPIO_Pin_15, data.buttonValue);
-				UartSend("led3");
+				GPIO_WriteBit(GPIOC, Led1->ledPin, data.buttonValue);
+				UartSend(Led1->ledName);
 			}
 		}
 	}
