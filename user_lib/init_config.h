@@ -12,10 +12,6 @@
 #define BUTTON2 GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2);
 #define BUTTON3 GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3);
 
-void vButton1Task(void *pvParameter);
-void vButton2Task(void *pvParameter);
-void vButton3Task(void *pvParameter);
-
 int Button1(void);
 int Button2(void);
 int Button3(void);
