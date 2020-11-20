@@ -55,18 +55,19 @@ void UartInit(void)
 	USART_Cmd(USART3, ENABLE);
 }
 
-void UartSend(char buff[],uint8_t len)
+void UartSend(char buff[])
 {
-	//USART_ReceiveData(USART3);
-	for(uint8_t i = 0; i < len; i++)
+	uint8_t index = 0;
+	while(buff[index] != '\0')
 	{
-		USART_SendData(USART3, buff[i]);
+		USART_SendData(USART3, buff[index]);
 		while (USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET)
 		{}
+		index++;
 	}
 	USART_SendData(USART3,13);
 	while (USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET)
-	{}
+	{}	
 }
 
 int Button1(void)

@@ -61,7 +61,7 @@ static void Task1Led(void *pvParameter)
 			if(data.taskSource == TASK1)
 			{
 				GPIO_WriteBit(GPIOC, GPIO_Pin_13, data.buttonValue);
-				UartSend("led1", 4);
+				UartSend("led1");
 			}
 		}
 	}
@@ -78,7 +78,7 @@ static void Task2Led(void *pvParameter)
 			if(data.taskSource == TASK2)
 			{
 				GPIO_WriteBit(GPIOC, GPIO_Pin_14, data.buttonValue);
-				UartSend("led2", 4);
+				UartSend("led2");
 			}
 		}
 	}
@@ -95,7 +95,7 @@ static void Task3Led(void *pvParameter)
 			if(data.taskSource == TASK3)
 			{
 				GPIO_WriteBit(GPIOC, GPIO_Pin_15, data.buttonValue);
-				UartSend("led3", 4);
+				UartSend("led3");
 			}
 		}
 	}

@@ -20,7 +20,7 @@ void delay_ms(void);
 void LedInit(void);
 void ButtonInit(void);
 void UartInit(void);
-void UartSend(char buff[], uint8_t len);
+void UartSend(char buff[]);
 
 
 #endif
