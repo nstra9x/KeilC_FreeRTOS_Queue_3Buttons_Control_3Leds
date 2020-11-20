@@ -1,0 +1,5 @@
+Objects/
+DebugConfig/
+STM32F10x_StdPeriph_Lib/
+*.son tra
+*.uvoptx
