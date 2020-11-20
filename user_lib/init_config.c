@@ -70,49 +70,19 @@ void UartSend(char buff[])
 	{}	
 }
 
-int Button1(void)
+int CheckButton(uint16_t ButtonPin)
 {
-	if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) == 0)
-	{
-		delay_ms();
-		if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) == 0)
+	if(BUTTON(ButtonPin) == 0)
 		{
-			while(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) == 0)
-			{}
-			return 1;
+			delay_ms();
+			if(BUTTON(ButtonPin) == 0)
+			{
+				while(BUTTON(ButtonPin) == 0)
+				{}
+				return 1;
+			}
 		}
-	}
-	return 0;
-}
-
-int Button2(void)
-{
-	if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0)
-	{
-		delay_ms();
-		if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0)
-		{
-			while(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0)
-			{}
-			return 1;
-		}
-	}
-	return 0;
-}
-
-int Button3(void)
-{
-	if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3) == 0)
-	{
-		delay_ms();
-		if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3) == 0)
-		{
-			while(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3) == 0)
-			{}
-			return 1;
-		}
-	}
-	return 0;
+		return 0;
 }
 
 void delay_ms() 	
